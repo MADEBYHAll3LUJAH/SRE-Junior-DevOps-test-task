@@ -1,0 +1,45 @@
+#Файл описывающий приложение, его порты и с какого образа стартовать
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  #Имя деплоймента
+  name: nginx-test-app
+  #namespace: whatever
+
+spec:
+  #Описываем что является селектором для деплоя. В нашем случае лейбл.апп
+  selector:
+    matchLabels:
+      app: nginx-test
+
+  #Описываем шаблон из которого создаются поды
+  template:
+    metadata:
+      #Метка подов. Сервисы и прочие модули будут искать все поды содержащие этот лейбл
+      labels:
+        app: nginx-test
+
+    spec:
+      #Секрет на случай, если нужен для подключения к репозиторию
+      #imagePullSecrets:
+      #- name: mysecrets
+      containers:
+      - name: nginx-test-cont
+        #Имя и путь к образу из которого создается контейнер
+        image: nginx:latest
+        ports:
+        #Имя порта если захотим обращаться по нему
+        - name: nginx-webport
+          #Порт контейнера
+          containerPort: 80
+
+        #Ресурсы на под
+        resources:
+          #Запрашиваемые ресурсы по cpu и памяти
+          requests:
+            cpu: 100m
+            memory: 128M
+          #Устанавливаемые лимиты по cpu и памяти
+          limits:
+            cpu: 500m
+            memory: 128M

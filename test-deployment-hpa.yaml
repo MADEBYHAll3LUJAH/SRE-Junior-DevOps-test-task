@@ -1,0 +1,26 @@
+#Файл описывающий HorizontalPodAutoscaler
+#В случае достижения параметров, будет создавать поды до максимального количества
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: test-nginx-hpa
+spec:
+  #Пишем что скалируем
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    #Имя по которому ищем что реплицировать и читать
+    name: nginx-test-app
+  #Минимальное и максимально количество реплик
+  minReplicas: 1
+  maxReplicas: 5
+  #Описываем параметры по росту которых начинаем плодить реплики
+  metrics:
+  #Если среднея нагрузка по подам на cpu превышает 70% 
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  #Если средняя нагрузка по подам на память превышает 128M
